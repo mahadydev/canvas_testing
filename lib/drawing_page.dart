@@ -52,6 +52,7 @@ class _DrawingPageState extends State<DrawingPage> {
     setState(() {
       lines = [];
       line = null;
+      obstructions = [];
     });
   }
 
@@ -69,6 +70,7 @@ class _DrawingPageState extends State<DrawingPage> {
             child: Stack(
               children: [
                 buildAllPaths(context),
+                buildObstructions(context),
                 buildCurrentPath(context),
                 buildColorToolbar(),
                 buildStrokeToolbar(),
@@ -93,21 +95,13 @@ class _DrawingPageState extends State<DrawingPage> {
       onPanStart: enableEditing ? onPanStart : null,
       onPanUpdate: enableEditing ? onPanUpdate : null,
       onPanEnd: enableEditing ? onPanEnd : null,
-      // onTap: onTap,
-      // onLongPressDown: (details) {
-      //   print("event long press");
-      // },
-      onTapDown: (details) {
-        print("event onTapDown press");
-        print(details.globalPosition.toString());
-        print(details.localPosition.toString());
-      },
+      onTapDown: onTapDown,
       child: RepaintBoundary(
         child: Container(
           width: 400,
           height: 800,
           padding: EdgeInsets.all(4.0),
-          color: Colors.white,
+          color: Colors.transparent,
           alignment: Alignment.topLeft,
           child: StreamBuilder<DrawnLine>(
             stream: currentLineStreamController.stream,
@@ -274,7 +268,40 @@ class _DrawingPageState extends State<DrawingPage> {
     );
   }
 
-  void onTap() {
-    print("event onTap press");
+  void onTapDown(TapDownDetails details) {
+    var type = ObstructionType.TREE;
+    setState(() {
+      obstructions.add(
+        Obstruction(
+          position: details.localPosition,
+          type: type,
+        ),
+      );
+    });
+  }
+
+  Widget buildObstructions(BuildContext context) {
+    return RepaintBoundary(
+      child: Container(
+        width: 400,
+        height: 800,
+        padding: EdgeInsets.all(4.0),
+        color: Colors.blue[100],
+        alignment: Alignment.center,
+        child: Stack(
+          children: obstructions
+              .map((e) => Positioned(
+                    top: e.position.dy,
+                    left: e.position.dx,
+                    child: Container(
+                      color: Colors.red,
+                      height: 5,
+                      width: 5,
+                    ),
+                  ))
+              .toList(),
+        ),
+      ),
+    );
   }
 }
