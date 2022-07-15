@@ -16,9 +16,12 @@ class DrawingPage extends StatefulWidget {
 class _DrawingPageState extends State<DrawingPage> {
   GlobalKey _globalKey = new GlobalKey();
   List<DrawnLine> lines = <DrawnLine>[];
+  List<Obstruction> obstructions = [];
   DrawnLine line;
   Color selectedColor = Colors.black;
   double selectedWidth = 5.0;
+  TransformationController cont = TransformationController();
+  bool enableEditing = true;
 
   StreamController<List<DrawnLine>> linesStreamController =
       StreamController<List<DrawnLine>>.broadcast();
@@ -55,29 +58,56 @@ class _DrawingPageState extends State<DrawingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.yellow[50],
-      body: Stack(
-        children: [
-          buildAllPaths(context),
-          buildCurrentPath(context),
-          buildColorToolbar(),
-          buildStrokeToolbar(),
-        ],
+      backgroundColor: Colors.yellow,
+      body: Container(
+        // width: 400,
+        // height: 800,
+        child: Align(
+          alignment: Alignment.center,
+          child: InteractiveViewer(
+            transformationController: cont,
+            child: Stack(
+              children: [
+                buildAllPaths(context),
+                buildCurrentPath(context),
+                buildColorToolbar(),
+                buildStrokeToolbar(),
+              ],
+            ),
+          ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            enableEditing = !enableEditing;
+          });
+        },
+        child: Text(enableEditing.toString()),
       ),
     );
   }
 
   Widget buildCurrentPath(BuildContext context) {
     return GestureDetector(
-      onPanStart: onPanStart,
-      onPanUpdate: onPanUpdate,
-      onPanEnd: onPanEnd,
+      onPanStart: enableEditing ? onPanStart : null,
+      onPanUpdate: enableEditing ? onPanUpdate : null,
+      onPanEnd: enableEditing ? onPanEnd : null,
+      // onTap: onTap,
+      // onLongPressDown: (details) {
+      //   print("event long press");
+      // },
+      onTapDown: (details) {
+        print("event onTapDown press");
+        print(details.globalPosition.toString());
+        print(details.localPosition.toString());
+      },
       child: RepaintBoundary(
         child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
+          width: 400,
+          height: 800,
           padding: EdgeInsets.all(4.0),
-          color: Colors.transparent,
+          color: Colors.white,
           alignment: Alignment.topLeft,
           child: StreamBuilder<DrawnLine>(
             stream: currentLineStreamController.stream,
@@ -98,8 +128,8 @@ class _DrawingPageState extends State<DrawingPage> {
     return RepaintBoundary(
       key: _globalKey,
       child: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
+        width: 400,
+        height: 800,
         color: Colors.transparent,
         padding: EdgeInsets.all(4.0),
         alignment: Alignment.topLeft,
@@ -118,6 +148,7 @@ class _DrawingPageState extends State<DrawingPage> {
   }
 
   void onPanStart(DragStartDetails details) {
+    print("event: onPan start");
     RenderBox box = context.findRenderObject();
     Offset point = box.globalToLocal(details.globalPosition);
     line = DrawnLine([point], selectedColor, selectedWidth);
@@ -241,5 +272,9 @@ class _DrawingPageState extends State<DrawingPage> {
         ),
       ),
     );
+  }
+
+  void onTap() {
+    print("event onTap press");
   }
 }

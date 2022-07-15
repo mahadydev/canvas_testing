@@ -7,3 +7,15 @@ class DrawnLine {
 
   DrawnLine(this.path, this.color, this.width);
 }
+
+class Obstruction {
+  final Offset position;
+  final ObstructionType type;
+
+  Obstruction({
+    @required this.position,
+    @required this.type,
+  });
+}
+
+enum ObstructionType { WATER, TREE, SAND, FLAG }

@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 
 class Sketcher extends CustomPainter {
   final List<DrawnLine> lines;
+  final List<Obstruction> objects;
 
-  Sketcher({this.lines});
+  Sketcher({this.lines, this.objects});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -23,6 +24,23 @@ class Sketcher extends CustomPainter {
         }
       }
     }
+
+    // for (var obj in objects) {
+    //   switch (obj.type) {
+    //     case ObstructionType.SAND:
+    //       {}
+    //       break;
+    //     case ObstructionType.WATER:
+    //       {}
+    //       break;
+    //     case ObstructionType.TREE:
+    //       {}
+    //       break;
+    //     case ObstructionType.FLAG:
+    //       {}
+    //       break;
+    //   }
+    // }
   }
 
   @override
