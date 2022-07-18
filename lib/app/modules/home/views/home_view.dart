@@ -17,6 +17,12 @@ class HomeView extends GetView<HomeController> {
         elevation: 0,
         title: const Text('Draw'),
         backgroundColor: const Color(0xFF277A63),
+        actions: [
+          IconButton(
+            onPressed: controller.undo,
+            icon: const Icon(Icons.undo),
+          ),
+        ],
       ),
       body: Stack(
         fit: StackFit.expand,
@@ -96,6 +102,8 @@ class ComponentBuilder extends GetView<HomeController> {
                       top: c.position.dy,
                       left: c.position.dx,
                       child: GestureDetector(
+                        onScaleStart: (d) =>
+                            controller.onCustomComponentScaleStart(d, c),
                         onScaleUpdate: (d) =>
                             controller.onCustomComponentScaleUpdate(d, c),
                         child: SvgPicture.asset(
@@ -150,8 +158,20 @@ class SideComponentBuilder extends GetView<HomeController> {
           ),
           const SizedBox(height: 20),
           InkWell(
-            onTap: controller.eraseLines,
-            child: SvgPicture.asset('assets/eraser.svg'),
+            onTap: controller.eraseModeSwitch,
+            child: Obx(
+              () => Container(
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                      color: controller.eraseMode.value
+                          ? Colors.red
+                          : Colors.transparent,
+                      width: 2),
+                ),
+                child: SvgPicture.asset('assets/eraser.svg'),
+              ),
+            ),
           ),
           const SizedBox(height: 20),
           SizedBox(height: Get.height * 0.10),
