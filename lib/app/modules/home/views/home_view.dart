@@ -45,9 +45,9 @@ class DrawingGestureDetectorBuilder extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return GestureDetector(
       key: controller.globalKey,
-      onPanStart: controller.onPanStart,
-      onPanUpdate: controller.onPanUpdate,
-      onPanEnd: controller.onPanEnd,
+      onScaleStart: controller.onScaleStart,
+      onScaleUpdate: controller.onScaleUpdate,
+      onScaleEnd: controller.onScaleEnd,
     );
   }
 }

@@ -6,6 +6,8 @@ import '../../../models/drawn_line.dart';
 
 class HomeController extends GetxController {
   final GlobalKey globalKey = GlobalKey();
+  TransformationController transformationController =
+      TransformationController();
   //
   RxList<CustomComponent> components = RxList.of(<CustomComponent>[]);
   Rx<List<DrawnLine>> drawnLines = Rx(<DrawnLine>[]);
@@ -14,15 +16,16 @@ class HomeController extends GetxController {
   RxDouble selectedWidth = 2.0.obs;
 
   RxBool eraseMode = false.obs;
+  double drawScale = 1.0;
 
   Offset _getPoint(position) {
     RenderBox box = globalKey.currentContext!.findRenderObject() as RenderBox;
     return box.globalToLocal(position);
   }
 
-  void onPanStart(DragStartDetails details) {
-    final Offset point = _getPoint(details.globalPosition);
-    debugPrint("event: onPan start $point");
+  void onScaleStart(ScaleStartDetails details) {
+    final Offset point = _getPoint(details.focalPoint);
+    // debugPrint("event: onScale start $point");
 
     if (!eraseMode.value) {
       line.value = DrawnLine(
@@ -33,11 +36,11 @@ class HomeController extends GetxController {
     }
   }
 
-  void onPanUpdate(DragUpdateDetails details) {
-    final Offset point = _getPoint(details.globalPosition);
-    debugPrint("event: onPan update $point");
+  void onScaleUpdate(ScaleUpdateDetails details) {
+    final Offset point = _getPoint(details.focalPoint);
+    // debugPrint("event: onScale update $point");
 
-    if (!eraseMode.value) {
+    if (!eraseMode.value && details.scale == 1) {
       List<Offset> path = List.from(line.value!.path)..add(point);
       line.value = DrawnLine(
         path: path,
@@ -47,10 +50,11 @@ class HomeController extends GetxController {
     }
   }
 
-  void onPanEnd(DragEndDetails details) {
+  void onScaleEnd(ScaleEndDetails details) {
     if (!eraseMode.value) {
-      debugPrint("event: onPan end");
+      // debugPrint("event: onScale end");
       drawnLines.value = List.from(drawnLines.value)..add(line.value!);
+      line.value = null;
     }
   }
 
@@ -103,7 +107,6 @@ class HomeController extends GetxController {
     if (drawnLines.value.isNotEmpty) {
       drawnLines.update((val) {
         drawnLines.value.removeLast();
-        line.value = null;
       });
     }
   }
