@@ -12,10 +12,8 @@ class HomeView extends GetView<HomeController> {
   const HomeView({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    print(Get.height);
-    print(Get.width);
     return Scaffold(
-      backgroundColor: Colors.green, // const Color(0xFFFCFAF2),
+      backgroundColor: const Color(0xFFFCFAF2),
       appBar: AppBar(
         elevation: 0,
         title: const Text('Draw'),
@@ -27,26 +25,15 @@ class HomeView extends GetView<HomeController> {
           ),
         ],
       ),
-      body: Center(
-        child: Container(
-          // padding: const EdgeInsets.only(
-          // top: MediaQuery.of(context).padding.top,
-          //     ),
-          color: Colors.white,
-          child: AspectRatio(
-            aspectRatio: 1 / 1.7037,
-            child: Stack(
-              fit: StackFit.expand,
-              children: const [
-                DrawingPreviousLinesBuilder(), //will draw lines
-                DrawingCurrentLinesBuilder(), //will draw line
-                DrawingGestureDetectorBuilder(), //detect gesture and draw accordingly
-                ComponentBuilder(), //build all component
-                SideComponentBuilder(), //side bar components
-              ],
-            ),
-          ),
-        ),
+      body: Stack(
+        fit: StackFit.expand,
+        children: const [
+          DrawingPreviousLinesBuilder(), //will draw lines
+          DrawingCurrentLinesBuilder(), //will draw line
+          DrawingGestureDetectorBuilder(), //detect gesture and draw accordingly
+          ComponentBuilder(), //build all component
+          SideComponentBuilder(), //side bar components
+        ],
       ),
     );
   }
@@ -142,7 +129,8 @@ class ComponentBuilder extends GetView<HomeController> {
                               ),
                             ),
                           ),
-                          if (controller.selectedCustomComponent.value == c)
+                          if (controller.selectedCustomComponent.value ==
+                              c) ...[
                             Positioned(
                               left: -20,
                               top: -20,
@@ -156,34 +144,35 @@ class ComponentBuilder extends GetView<HomeController> {
                                 onPressed: () => controller.deleteComponent(c),
                               ),
                             ),
-                          if (controller.selectedCustomComponent.value == c)
                             Positioned(
                               right: -20,
                               bottom: -20,
                               child: IconButton(
                                 splashRadius: 20,
-                                icon: Icon(
+                                icon: const Icon(
                                   CupertinoIcons.add_circled_solid,
                                   size: 22,
-                                  color: Colors.red.shade700,
+                                  color: Colors.black87,
                                 ),
-                                onPressed: () => controller.deleteComponent(c),
+                                onPressed: () =>
+                                    controller.increaseComponentSize(c),
                               ),
                             ),
-                          if (controller.selectedCustomComponent.value == c)
                             Positioned(
                               left: -20,
                               bottom: -20,
                               child: IconButton(
                                 splashRadius: 20,
-                                icon: Icon(
+                                icon: const Icon(
                                   Icons.remove_circle,
                                   size: 22,
-                                  color: Colors.red.shade700,
+                                  color: Colors.black87,
                                 ),
-                                onPressed: () => controller.deleteComponent(c),
+                                onPressed: () =>
+                                    controller.decreaseComponentSize(c),
                               ),
                             ),
+                          ],
                         ],
                       ),
                     ),

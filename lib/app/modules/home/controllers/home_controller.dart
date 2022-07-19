@@ -25,9 +25,9 @@ class HomeController extends GetxController {
   }
 
   void onScaleStart(ScaleStartDetails details) {
+    selectedCustomComponent.value = null;
     final Offset point = _getPoint(details.focalPoint);
     debugPrint("event: onScale start $point");
-    selectedCustomComponent.value = null;
     line.value = DrawnLine(
       path: [point],
       color: selectedLineColor.value,
@@ -51,18 +51,21 @@ class HomeController extends GetxController {
 
   void onScaleEnd(ScaleEndDetails details) {
     debugPrint("event: onScale end");
-    drawnLines.value = List.from(drawnLines.value)..add(line.value!);
+    if (line.value!.path.length > 1) {
+      drawnLines.value = List.from(drawnLines.value)..add(line.value!);
+    }
     line.value = null;
   }
 
   addComponentToScreen(String svgPath) {
-    components.add(
-      CustomComponent(
-        svgPath: svgPath,
-        size: const Size(50, 50),
-        position: Offset(Get.width / 3, Get.height / 3),
-      ),
+    final c = CustomComponent(
+      svgPath: svgPath,
+      size: const Size(50, 50),
+      position: Offset(Get.width / 3, Get.height / 3),
     );
+
+    components.add(c);
+    selectedCustomComponent.value = c;
   }
 
   onCustomComponentScaleStart(
@@ -72,6 +75,33 @@ class HomeController extends GetxController {
 
   deleteComponent(CustomComponent c) {
     components.remove(c);
+  }
+
+  increaseComponentSize(CustomComponent customComponent) {
+    var temp = CustomComponent(
+      svgPath: customComponent.svgPath,
+      size: Size(
+        customComponent.size.width + 10,
+        customComponent.size.height + 10,
+      ),
+      position: customComponent.position,
+    );
+    int index = components.indexWhere((c) => c == customComponent);
+    components[index] = temp;
+  }
+
+  decreaseComponentSize(CustomComponent customComponent) {
+    var temp = CustomComponent(
+      svgPath: customComponent.svgPath,
+      size: Size(
+        customComponent.size.width - 10,
+        customComponent.size.height - 10,
+      ),
+      position: customComponent.position,
+    );
+
+    int index = components.indexWhere((c) => c == customComponent);
+    components[index] = temp;
   }
 
   onCustomComponentScaleUpdate(
