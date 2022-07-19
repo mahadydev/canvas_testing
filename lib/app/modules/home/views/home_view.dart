@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -11,8 +12,10 @@ class HomeView extends GetView<HomeController> {
   const HomeView({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    print(Get.height);
+    print(Get.width);
     return Scaffold(
-      backgroundColor: const Color(0xFFFCFAF2),
+      backgroundColor: Colors.green, // const Color(0xFFFCFAF2),
       appBar: AppBar(
         elevation: 0,
         title: const Text('Draw'),
@@ -24,15 +27,26 @@ class HomeView extends GetView<HomeController> {
           ),
         ],
       ),
-      body: Stack(
-        fit: StackFit.expand,
-        children: const [
-          DrawingPreviousLinesBuilder(), //will draw lines
-          DrawingCurrentLinesBuilder(), //will draw line
-          DrawingGestureDetectorBuilder(), //detect gesture and draw accordingly
-          ComponentBuilder(), //build all component
-          SideComponentBuilder(), //side bar components
-        ],
+      body: Center(
+        child: Container(
+          // padding: const EdgeInsets.only(
+          // top: MediaQuery.of(context).padding.top,
+          //     ),
+          color: Colors.white,
+          child: AspectRatio(
+            aspectRatio: 1 / 1.7037,
+            child: Stack(
+              fit: StackFit.expand,
+              children: const [
+                DrawingPreviousLinesBuilder(), //will draw lines
+                DrawingCurrentLinesBuilder(), //will draw line
+                DrawingGestureDetectorBuilder(), //detect gesture and draw accordingly
+                ComponentBuilder(), //build all component
+                SideComponentBuilder(), //side bar components
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -101,17 +115,76 @@ class ComponentBuilder extends GetView<HomeController> {
                     (CustomComponent c) => Positioned(
                       top: c.position.dy,
                       left: c.position.dx,
-                      child: GestureDetector(
-                        onScaleStart: (d) =>
-                            controller.onCustomComponentScaleStart(d, c),
-                        onScaleUpdate: (d) =>
-                            controller.onCustomComponentScaleUpdate(d, c),
-                        child: SvgPicture.asset(
-                          c.svgPath,
-                          height: c.size.height,
-                          width: c.size.width,
-                          fit: BoxFit.fill,
-                        ),
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          GestureDetector(
+                            onScaleStart: (d) =>
+                                controller.onCustomComponentScaleStart(d, c),
+                            onScaleUpdate: (d) =>
+                                controller.onCustomComponentScaleUpdate(d, c),
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: controller
+                                              .selectedCustomComponent.value ==
+                                          c
+                                      ? Colors.green
+                                      : Colors.transparent,
+                                ),
+                              ),
+                              child: SvgPicture.asset(
+                                c.svgPath,
+                                height: c.size.height,
+                                width: c.size.width,
+                                fit: BoxFit.fill,
+                              ),
+                            ),
+                          ),
+                          if (controller.selectedCustomComponent.value == c)
+                            Positioned(
+                              left: -20,
+                              top: -20,
+                              child: IconButton(
+                                splashRadius: 20,
+                                icon: Icon(
+                                  CupertinoIcons.clear_circled_solid,
+                                  size: 22,
+                                  color: Colors.red.shade700,
+                                ),
+                                onPressed: () => controller.deleteComponent(c),
+                              ),
+                            ),
+                          if (controller.selectedCustomComponent.value == c)
+                            Positioned(
+                              right: -20,
+                              bottom: -20,
+                              child: IconButton(
+                                splashRadius: 20,
+                                icon: Icon(
+                                  CupertinoIcons.add_circled_solid,
+                                  size: 22,
+                                  color: Colors.red.shade700,
+                                ),
+                                onPressed: () => controller.deleteComponent(c),
+                              ),
+                            ),
+                          if (controller.selectedCustomComponent.value == c)
+                            Positioned(
+                              left: -20,
+                              bottom: -20,
+                              child: IconButton(
+                                splashRadius: 20,
+                                icon: Icon(
+                                  Icons.remove_circle,
+                                  size: 22,
+                                  color: Colors.red.shade700,
+                                ),
+                                onPressed: () => controller.deleteComponent(c),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                   )
@@ -157,21 +230,10 @@ class SideComponentBuilder extends GetView<HomeController> {
             child: SvgPicture.asset('assets/house.svg'),
           ),
           const SizedBox(height: 20),
-          InkWell(
-            onTap: controller.eraseModeSwitch,
-            child: Obx(
-              () => Container(
-                padding: const EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                      color: controller.eraseMode.value
-                          ? Colors.red
-                          : Colors.transparent,
-                      width: 2),
-                ),
-                child: SvgPicture.asset('assets/eraser.svg'),
-              ),
-            ),
+          Container(
+            padding: const EdgeInsets.all(2),
+            decoration: const BoxDecoration(),
+            child: SvgPicture.asset('assets/eraser.svg'),
           ),
           const SizedBox(height: 20),
           SizedBox(height: Get.height * 0.10),
