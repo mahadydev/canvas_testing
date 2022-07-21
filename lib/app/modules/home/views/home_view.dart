@@ -23,16 +23,44 @@ class HomeView extends GetView<HomeController> {
             onPressed: controller.undo,
             icon: const Icon(Icons.undo),
           ),
+          IconButton(
+            onPressed: () => controller.isLockEnabled.value =
+                !controller.isLockEnabled.value,
+            icon: Obx(
+              () => Icon(controller.isLockEnabled.value
+                  ? Icons.lock
+                  : Icons.lock_open),
+            ),
+          ),
         ],
       ),
       body: Stack(
-        fit: StackFit.expand,
-        children: const [
-          DrawingPreviousLinesBuilder(), //will draw lines
-          DrawingCurrentLinesBuilder(), //will draw line
-          DrawingGestureDetectorBuilder(), //detect gesture and draw accordingly
-          ComponentBuilder(), //build all component
-          SideComponentBuilder(), //side bar components
+        children: [
+          Obx(
+            () => InteractiveViewer(
+              constrained: false,
+              minScale: 0.2,
+              maxScale: 3,
+              panEnabled: controller.isLockEnabled.value,
+              scaleEnabled: controller.isLockEnabled.value,
+              boundaryMargin: const EdgeInsets.all(double.infinity),
+              child: Container(
+                color: Colors.yellow.shade100,
+                height: 2000,
+                width: 2000,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: const [
+                    DrawingPreviousLinesBuilder(), //will draw lines
+                    DrawingCurrentLinesBuilder(), //will draw line
+                    DrawingGestureDetectorBuilder(), //detect gesture and draw accordingly
+                    ComponentBuilder(), //build all component
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SideComponentBuilder(),
         ],
       ),
     );
@@ -44,11 +72,15 @@ class DrawingGestureDetectorBuilder extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      key: controller.globalKey,
-      onScaleStart: controller.onScaleStart,
-      onScaleUpdate: controller.onScaleUpdate,
-      onScaleEnd: controller.onScaleEnd,
+    return Obx(
+      () => !controller.isLockEnabled.value
+          ? GestureDetector(
+              key: controller.globalKey,
+              onScaleStart: controller.onScaleStart,
+              onScaleUpdate: controller.onScaleUpdate,
+              onScaleEnd: controller.onScaleEnd,
+            )
+          : const SizedBox(),
     );
   }
 }
@@ -188,45 +220,46 @@ class SideComponentBuilder extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          InkWell(
-            onTap: () => controller.addComponentToScreen('assets/flag.svg'),
-            child: SvgPicture.asset('assets/flag.svg'),
-          ),
-          const SizedBox(height: 20),
-          InkWell(
-            onTap: () => controller.addComponentToScreen('assets/tree.svg'),
-            child: SvgPicture.asset('assets/tree.svg'),
-          ),
-          const SizedBox(height: 20),
-          InkWell(
-            onTap: () => controller.addComponentToScreen('assets/sand.svg'),
-            child: SvgPicture.asset('assets/sand.svg'),
-          ),
-          const SizedBox(height: 20),
-          InkWell(
-            onTap: () => controller.addComponentToScreen('assets/water.svg'),
-            child: SvgPicture.asset('assets/water.svg'),
-          ),
-          const SizedBox(height: 20),
-          InkWell(
-            onTap: () => controller.addComponentToScreen('assets/house.svg'),
-            child: SvgPicture.asset('assets/house.svg'),
-          ),
-          const SizedBox(height: 20),
-          Container(
-            padding: const EdgeInsets.all(2),
-            decoration: const BoxDecoration(),
-            child: SvgPicture.asset('assets/eraser.svg'),
-          ),
-          const SizedBox(height: 20),
-          SizedBox(height: Get.height * 0.10),
-        ],
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: Padding(
+        padding: EdgeInsets.only(right: 20, bottom: Get.height * 0.10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            InkWell(
+              onTap: () => controller.addComponentToScreen('assets/flag.svg'),
+              child: SvgPicture.asset('assets/flag.svg'),
+            ),
+            const SizedBox(height: 20),
+            InkWell(
+              onTap: () => controller.addComponentToScreen('assets/tree.svg'),
+              child: SvgPicture.asset('assets/tree.svg'),
+            ),
+            const SizedBox(height: 20),
+            InkWell(
+              onTap: () => controller.addComponentToScreen('assets/sand.svg'),
+              child: SvgPicture.asset('assets/sand.svg'),
+            ),
+            const SizedBox(height: 20),
+            InkWell(
+              onTap: () => controller.addComponentToScreen('assets/water.svg'),
+              child: SvgPicture.asset('assets/water.svg'),
+            ),
+            const SizedBox(height: 20),
+            InkWell(
+              onTap: () => controller.addComponentToScreen('assets/house.svg'),
+              child: SvgPicture.asset('assets/house.svg'),
+            ),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(2),
+              decoration: const BoxDecoration(),
+              child: SvgPicture.asset('assets/eraser.svg'),
+            ),
+          ],
+        ),
       ),
     );
   }

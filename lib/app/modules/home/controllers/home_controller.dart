@@ -16,7 +16,7 @@ class HomeController extends GetxController {
   RxDouble selectedLineWidth = 2.0.obs;
   Rxn<CustomComponent> selectedCustomComponent = Rxn();
 
-  double drawScale = 1.0;
+  RxBool isLockEnabled = false.obs;
 
   //METHODS---------------------------------------------------------
   Offset _getPoint(position) {
